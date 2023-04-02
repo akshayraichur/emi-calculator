@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
  * p -> Principal amount: loan - down
  * r -> rate of interest
  * n -> no of years.
+ *
+ * input error color: #FAE9E5
+ * input text color: #EB5A3C
  */
 
 function App() {
@@ -17,7 +20,14 @@ function App() {
   const [totalInterest, setTotalInterest] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  const [totalLoanError, setTotalLoanError] = useState("input");
+  const [tenureError, setTenureError] = useState("input");
+  const [rateOfInterestError, setRateOfInterestError] = useState("input");
+
   const calculateEMI = () => {
+    if (!Number(rateOfInterest) || !Number(tenure) || !Number(totalLoanAmount)) {
+      return;
+    }
     let interest = rateOfInterest / 12 / 100;
     let tenureInMonths = tenure * 12;
 
@@ -40,21 +50,27 @@ function App() {
 
   const handleTotalLoanChange = (e) => {
     if (e.target.value.length < 6 || e.target.value.length > 8) {
-      return;
+      setTotalLoanError("input error");
+    } else {
+      setTotalLoanError("input");
     }
     setTotalLoanAmount(parseInt(e.target.value));
   };
 
   const handleTenureChange = (e) => {
     if (e.target.value > 40 || e.target.value < 1) {
-      return;
+      setTenureError("input error");
+    } else {
+      setTenureError("input");
     }
     setTenure(parseInt(e.target.value));
   };
 
   const handleRateOfInterestChange = (e) => {
     if (e.target.value > 45 || e.target.value < 1) {
-      return;
+      setRateOfInterestError("input error");
+    } else {
+      setRateOfInterestError("input");
     }
     setRateOfInterest(parseFloat(e.target.value).toFixed(2));
   };
@@ -68,11 +84,11 @@ function App() {
             <label htmlFor="loan-amount" className="label">
               Loan amount
             </label>
-            <div className="value-container">
+            <div className={`value-container ${totalLoanError.includes("error") ? "error" : ""}`}>
               <span>₹</span>
               <input
                 type="number"
-                className="input"
+                className={totalLoanError}
                 style={{ width: "100px" }}
                 value={totalLoanAmount}
                 onChange={handleTotalLoanChange}
@@ -98,15 +114,15 @@ function App() {
             <label htmlFor="interest" className="label">
               Rate of interest (p.a)
             </label>
-            <div className="value-container">
+            <div className={`value-container ${rateOfInterestError.includes("error") ? "error" : ""}`}>
               <input
                 type="number"
-                className="input"
+                className={rateOfInterestError}
                 style={{ width: "100px", textAlign: "right" }}
                 value={rateOfInterest}
                 onChange={handleRateOfInterestChange}
               />
-              <span>%</span>
+              <span className={`${rateOfInterestError.includes("error") ? "error" : ""}`}>%</span>
             </div>
           </div>
           <input
@@ -127,10 +143,10 @@ function App() {
             <label htmlFor="tenure" className="label">
               Loan tenure
             </label>
-            <div className="value-container">
+            <div className={`value-container ${tenureError.includes("error") ? "error" : ""}`}>
               <input
                 type="number"
-                className="input"
+                className={tenureError}
                 style={{ width: "100px", textAlign: "right" }}
                 value={tenure}
                 onChange={handleTenureChange}
@@ -160,7 +176,7 @@ function App() {
 
           <div className="values">
             <span>Principal amount</span>
-            <span>₹ {totalLoanAmount.toLocaleString("en-IN")}</span>
+            <span>₹ {totalLoanAmount ? totalLoanAmount.toLocaleString("en-IN") : 0}</span>
           </div>
 
           <div className="values">
